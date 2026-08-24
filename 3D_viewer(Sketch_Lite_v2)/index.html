@@ -1,0 +1,554 @@
+<!-- index.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>Simple 3D Viewer V4</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+  <div id="viewer"></div>
+
+  <!-- =================================================
+       TOP BAR
+  ================================================== -->
+
+  <header class="topbar">
+
+    <div class="logo">
+      3D VIEWER <small>V4</small>
+    </div>
+
+    <div class="topActions">
+
+      <label class="loadBtn">
+        📂 Load Model
+        <input
+          id="fileInput"
+          type="file"
+          accept=".glb,.gltf,.bin,.fbx,.obj,.stl,.ply,.dae,.3mf"
+          hidden
+        >
+      </label>
+
+      <label class="textureBtn">
+        🖼 Load Texture
+        <input
+          id="textureInput"
+          type="file"
+          accept=".png,.jpg,.jpeg,.webp"
+          hidden
+        >
+      </label>
+
+    </div>
+
+  </header>
+
+
+  <!-- =================================================
+       INSPECTOR
+  ================================================== -->
+
+  <aside id="inspector">
+
+    <div class="panelTitle">
+
+      INSPECTOR
+
+      <button id="closeInspector">
+        ×
+      </button>
+
+    </div>
+
+
+    <!-- MODEL -->
+
+    <div class="section">
+
+      <h3>MODEL</h3>
+
+      <div id="modelInfo">
+        No model loaded
+      </div>
+
+    </div>
+
+
+    <!-- ANIMATION -->
+
+    <div class="section">
+
+      <h3>ANIMATION</h3>
+
+      <div id="animationInfo">
+        No animations
+      </div>
+
+      <div id="animationControls">
+
+        <button id="playAnimation">
+          ▶ Play
+        </button>
+
+        <button id="pauseAnimation">
+          ⏸ Pause
+        </button>
+
+        <button id="stopAnimation">
+          ⏹ Stop
+        </button>
+
+        <select id="animationSelect"></select>
+
+      </div>
+
+
+      <div class="animSpeed">
+
+        <label>
+          Speed
+          <span id="speedValue">1.0x</span>
+        </label>
+
+        <input
+          id="animationSpeed"
+          type="range"
+          min="0"
+          max="2"
+          value="1"
+          step="0.1"
+        >
+
+      </div>
+
+    </div>
+
+
+    <!-- SHOWCASE ROTATION -->
+
+    <div class="section">
+
+      <h3>SHOWCASE</h3>
+
+      <button
+        id="showcaseBtn"
+        class="wideBtn"
+      >
+        ⟳ Auto Rotate OFF
+      </button>
+
+      <label class="sliderLabel">
+        Rotation Speed
+        <span id="rotationValue">
+          0.5x
+        </span>
+      </label>
+
+      <input
+        id="rotationSpeed"
+        type="range"
+        min="0"
+        max="3"
+        value=".5"
+        step=".1"
+      >
+
+    </div>
+
+
+    <!-- VIEW -->
+
+    <div class="section">
+
+      <h3>VIEW</h3>
+
+      <button
+        id="outlineBtn"
+        class="wideBtn"
+      >
+        ◇ Outline OFF
+      </button>
+
+      <button
+        id="shaderBtn"
+        class="wideBtn"
+      >
+        ✦ Shader OFF
+      </button>
+
+      <button
+        id="overlayBtnInspector"
+        class="wideBtn"
+      >
+        ◉ Loading Overlay ON
+      </button>
+
+    </div>
+
+
+    <!-- TEXTURE MAPS -->
+
+    <div class="section">
+
+      <h3>TEXTURE MAPS</h3>
+
+      <div id="textureMaps">
+
+        <div class="empty">
+          No textures
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <!-- MATERIAL -->
+
+    <div class="section">
+
+      <h3>MATERIALS</h3>
+
+      <div id="materialInfo">
+        No material selected
+      </div>
+
+    </div>
+
+  </aside>
+
+
+  <!-- =================================================
+       BOTTOM CONTROLS
+  ================================================== -->
+
+  <div class="controls">
+
+    <button id="resetBtn">
+      ↻ Reset
+    </button>
+
+    <button id="wireBtn">
+      ◇ Wireframe
+    </button>
+
+    <button id="gridBtn">
+      ▦ Grid
+    </button>
+
+    <button id="lightBtn">
+      ☀ Light
+    </button>
+
+    <button id="showcaseBottom">
+      ⟳ Showcase
+    </button>
+
+    <button id="outlineBottom">
+      ◇ Outline
+    </button>
+
+    <button id="shaderBottom">
+      ✦ Shader
+    </button>
+
+    <button id="overlayBottom">
+      ◉ Overlay
+    </button>
+
+    <button id="inspectorBtn">
+      ☷ Inspector
+    </button>
+
+    <button id="helpBtn">
+      ?
+    </button>
+
+  </div>
+
+
+  <!-- =================================================
+       LOADING OVERLAY
+  ================================================== -->
+
+  <div
+    id="loadingOverlay"
+    class="loadingOverlay"
+  >
+
+    <div class="loadingBox">
+
+      <div
+        id="loadingTitle"
+        class="loadingTitle"
+      >
+        Loading Model
+      </div>
+
+      <div class="loadingBar">
+
+        <div
+          id="loadingProgress"
+          class="loadingProgress"
+        ></div>
+
+      </div>
+
+      <div
+        id="loadingPercent"
+        class="loadingPercent"
+      >
+        0%
+      </div>
+
+      <button
+        id="hideLoading"
+        class="hideLoading"
+      >
+        Hide
+      </button>
+
+    </div>
+
+  </div>
+
+
+  <!-- =================================================
+       DROP MESSAGE
+  ================================================== -->
+
+  <div id="dropText">
+
+    Drop 3D model here
+
+    <small>
+      GLB • GLTF • FBX • OBJ • STL • PLY • DAE • 3MF
+    </small>
+
+  </div>
+
+
+  <!-- =================================================
+       HELP
+  ================================================== -->
+
+  <div
+    id="helpPanel"
+    class="modal"
+  >
+
+    <div class="modalBox">
+
+      <button
+        class="modalClose"
+        id="closeHelp"
+      >
+        ×
+      </button>
+
+      <h2>
+        Viewer Help
+      </h2>
+
+      <div class="helpRow">
+        <b>Left Mouse</b>
+        <span>Rotate Camera</span>
+      </div>
+
+      <div class="helpRow">
+        <b>Shift + Left Mouse</b>
+        <span>Rotate Light</span>
+      </div>
+
+      <div class="helpRow">
+        <b>Right Mouse</b>
+        <span>Pan Camera</span>
+      </div>
+
+      <div class="helpRow">
+        <b>Mouse Wheel</b>
+        <span>Zoom</span>
+      </div>
+
+      <div class="helpRow">
+        <b>W</b>
+        <span>Wireframe</span>
+      </div>
+
+      <div class="helpRow">
+        <b>G</b>
+        <span>Grid</span>
+      </div>
+
+      <div class="helpRow">
+        <b>I</b>
+        <span>Inspector</span>
+      </div>
+
+      <div class="helpRow">
+        <b>R</b>
+        <span>Reset Camera</span>
+      </div>
+
+      <div class="helpRow">
+        <b>L</b>
+        <span>Light Mode</span>
+      </div>
+
+      <div class="helpRow">
+        <b>O</b>
+        <span>Loading Overlay</span>
+      </div>
+
+      <div class="helpRow">
+        <b>A</b>
+        <span>Auto Showcase</span>
+      </div>
+
+      <div class="helpRow">
+        <b>F</b>
+        <span>Outline</span>
+      </div>
+
+      <div class="helpRow">
+        <b>S</b>
+        <span>Shader Preview</span>
+      </div>
+
+      <div class="helpRow">
+        <b>H</b>
+        <span>Help</span>
+      </div>
+
+      <button
+        id="openKeys"
+        class="bigBtn"
+      >
+        ⌨ Keyboard Remapping
+      </button>
+
+    </div>
+
+  </div>
+
+
+  <!-- =================================================
+       KEYBOARD REMAPPING
+  ================================================== -->
+
+  <div
+    id="keyPanel"
+    class="modal"
+  >
+
+    <div class="modalBox">
+
+      <button
+        class="modalClose"
+        id="closeKeys"
+      >
+        ×
+      </button>
+
+      <h2>
+        Keyboard Shortcuts
+      </h2>
+
+      <div class="keyRow">
+        <span>Reset Camera</span>
+        <button data-action="reset">R</button>
+      </div>
+
+      <div class="keyRow">
+        <span>Wireframe</span>
+        <button data-action="wire">W</button>
+      </div>
+
+      <div class="keyRow">
+        <span>Grid</span>
+        <button data-action="grid">G</button>
+      </div>
+
+      <div class="keyRow">
+        <span>Inspector</span>
+        <button data-action="inspector">I</button>
+      </div>
+
+      <div class="keyRow">
+        <span>Light</span>
+        <button data-action="light">L</button>
+      </div>
+
+      <div class="keyRow">
+        <span>Showcase</span>
+        <button data-action="showcase">A</button>
+      </div>
+
+      <div class="keyRow">
+        <span>Outline</span>
+        <button data-action="outline">F</button>
+      </div>
+
+      <div class="keyRow">
+        <span>Shader</span>
+        <button data-action="shader">S</button>
+      </div>
+
+      <div class="keyRow">
+        <span>Overlay</span>
+        <button data-action="overlay">O</button>
+      </div>
+
+      <div class="keyRow">
+        <span>Help</span>
+        <button data-action="help">H</button>
+      </div>
+
+      <p class="keyHint">
+        Click a key and press a new keyboard key.
+      </p>
+
+      <button
+        id="resetKeys"
+        class="bigBtn"
+      >
+        Reset Shortcuts
+      </button>
+
+    </div>
+
+  </div>
+
+
+  <div class="info">
+
+    <span>🖱 Rotate</span>
+    <span>Shift + 🖱 Light</span>
+    <span>🖐 Pan</span>
+    <span>🔍 Zoom</span>
+    <span>🎬 Animation</span>
+    <span>⟳ Showcase</span>
+
+  </div>
+
+
+  <!-- THREE.JS -->
+
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js",
+      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.180.0/examples/jsm/"
+    }
+  }
+  </script>
+
+  <script type="module" src="app.js"></script>
+
+</body>
+</html>

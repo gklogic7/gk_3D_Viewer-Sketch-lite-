@@ -1,0 +1,345 @@
+<!-- index.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>Simple 3D Viewer V3</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+  <div id="viewer"></div>
+
+  <!-- TOP BAR -->
+  <header class="topbar">
+
+    <div class="logo">
+      3D VIEWER <small>V3</small>
+    </div>
+
+    <label class="loadBtn">
+      📂 Load Model
+      <input
+        id="fileInput"
+        type="file"
+        accept=".glb,.gltf,.bin,.fbx,.obj,.stl,.ply,.dae,.3mf,.wrl,.vrm,.png,.jpg,.jpeg"
+        hidden
+      >
+    </label>
+
+  </header>
+
+
+  <!-- INSPECTOR -->
+  <aside id="inspector">
+
+    <div class="panelTitle">
+      INSPECTOR
+      <button id="closeInspector">×</button>
+    </div>
+
+
+    <div class="section">
+
+      <h3>MODEL</h3>
+
+      <div id="modelInfo">
+        No model loaded
+      </div>
+
+    </div>
+
+
+    <!-- ANIMATION PANEL -->
+    <div class="section" id="animationSection">
+
+      <h3>ANIMATION</h3>
+
+      <div id="animationInfo">
+        No animations
+      </div>
+
+      <div id="animationControls">
+
+        <button id="playAnimation">
+          ▶ Play
+        </button>
+
+        <button id="pauseAnimation">
+          ⏸ Pause
+        </button>
+
+        <button id="stopAnimation">
+          ⏹ Stop
+        </button>
+
+        <select id="animationSelect">
+        </select>
+
+      </div>
+
+      <div class="animSpeed">
+
+        <label>
+          Speed
+          <span id="speedValue">1.0x</span>
+        </label>
+
+        <input
+          id="animationSpeed"
+          type="range"
+          min="0"
+          max="2"
+          value="1"
+          step="0.1"
+        >
+
+      </div>
+
+    </div>
+
+
+    <!-- TEXTURES -->
+    <div class="section">
+
+      <h3>TEXTURE MAPS</h3>
+
+      <div id="textureMaps">
+        <div class="empty">
+          No textures
+        </div>
+      </div>
+
+    </div>
+
+
+    <!-- MATERIAL -->
+    <div class="section">
+
+      <h3>MATERIALS</h3>
+
+      <div id="materialInfo">
+        No material selected
+      </div>
+
+    </div>
+
+  </aside>
+
+
+  <!-- CONTROLS -->
+  <div class="controls">
+
+    <button id="resetBtn">
+      ↻ Reset
+    </button>
+
+    <button id="wireBtn">
+      ◇ Wireframe
+    </button>
+
+    <button id="gridBtn">
+      ▦ Grid
+    </button>
+
+    <button id="lightBtn">
+      ☀ Light
+    </button>
+
+    <button id="inspectorBtn">
+      ☷ Inspector
+    </button>
+
+    <button id="helpBtn">
+      ?
+    </button>
+
+  </div>
+
+
+  <!-- DROP -->
+  <div id="dropText">
+    Drop 3D model here
+    <small>
+      GLB • GLTF • FBX • OBJ • STL • PLY • DAE • 3MF
+    </small>
+  </div>
+
+
+  <!-- HELP -->
+  <div id="helpPanel" class="modal">
+
+    <div class="modalBox">
+
+      <button
+        class="modalClose"
+        id="closeHelp"
+      >
+        ×
+      </button>
+
+      <h2>Viewer Help</h2>
+
+      <div class="helpRow">
+        <b>Left Mouse</b>
+        <span>Rotate Camera</span>
+      </div>
+
+      <div class="helpRow">
+        <b>Shift + Left Mouse</b>
+        <span>Rotate Light</span>
+      </div>
+
+      <div class="helpRow">
+        <b>Right Mouse</b>
+        <span>Pan Camera</span>
+      </div>
+
+      <div class="helpRow">
+        <b>Mouse Wheel</b>
+        <span>Zoom</span>
+      </div>
+
+      <div class="helpRow">
+        <b>W</b>
+        <span>Wireframe</span>
+      </div>
+
+      <div class="helpRow">
+        <b>G</b>
+        <span>Grid</span>
+      </div>
+
+      <div class="helpRow">
+        <b>I</b>
+        <span>Inspector</span>
+      </div>
+
+      <div class="helpRow">
+        <b>R</b>
+        <span>Reset Camera</span>
+      </div>
+
+      <div class="helpRow">
+        <b>L</b>
+        <span>Light Mode</span>
+      </div>
+
+      <div class="helpRow">
+        <b>H</b>
+        <span>Help</span>
+      </div>
+
+      <h3 class="formatTitle">
+        SUPPORTED FORMATS
+      </h3>
+
+      <div class="formats">
+        GLB / GLTF<br>
+        FBX<br>
+        OBJ<br>
+        STL<br>
+        PLY<br>
+        DAE<br>
+        3MF
+      </div>
+
+      <button
+        id="openKeys"
+        class="bigBtn"
+      >
+        ⌨ Keyboard Remapping
+      </button>
+
+    </div>
+
+  </div>
+
+
+  <!-- KEYBOARD -->
+  <div id="keyPanel" class="modal">
+
+    <div class="modalBox">
+
+      <button
+        class="modalClose"
+        id="closeKeys"
+      >
+        ×
+      </button>
+
+      <h2>Keyboard Shortcuts</h2>
+
+      <div class="keyRow">
+        <span>Reset Camera</span>
+        <button data-action="reset">R</button>
+      </div>
+
+      <div class="keyRow">
+        <span>Wireframe</span>
+        <button data-action="wire">W</button>
+      </div>
+
+      <div class="keyRow">
+        <span>Grid</span>
+        <button data-action="grid">G</button>
+      </div>
+
+      <div class="keyRow">
+        <span>Inspector</span>
+        <button data-action="inspector">I</button>
+      </div>
+
+      <div class="keyRow">
+        <span>Light</span>
+        <button data-action="light">L</button>
+      </div>
+
+      <div class="keyRow">
+        <span>Help</span>
+        <button data-action="help">H</button>
+      </div>
+
+      <p class="keyHint">
+        Click a key and press a new keyboard key.
+      </p>
+
+      <button
+        id="resetKeys"
+        class="bigBtn"
+      >
+        Reset Shortcuts
+      </button>
+
+    </div>
+
+  </div>
+
+
+  <div class="info">
+
+    <span>🖱 Rotate</span>
+    <span>Shift + 🖱 Light</span>
+    <span>🖐 Pan</span>
+    <span>🔍 Zoom</span>
+    <span>🎬 Animation</span>
+
+  </div>
+
+
+  <!-- THREE.JS -->
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js",
+      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.180.0/examples/jsm/"
+    }
+  }
+  </script>
+
+  <script type="module" src="app.js"></script>
+
+</body>
+</html>

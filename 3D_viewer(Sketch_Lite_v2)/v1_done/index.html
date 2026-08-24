@@ -1,0 +1,52 @@
+<!-- index.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Simple 3D Model Viewer</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <div id="viewer"></div>
+
+  <div class="topbar">
+    <div class="logo">3D VIEWER</div>
+
+    <label class="loadBtn">
+      📂 Load Model
+      <input id="fileInput" type="file" accept=".glb,.gltf,.bin,.png,.jpg,.jpeg" hidden>
+    </label>
+  </div>
+
+  <div class="controls">
+    <button id="resetBtn">↻ Reset</button>
+    <button id="wireBtn">◇ Wireframe</button>
+    <button id="gridBtn">▦ Grid</button>
+    <button id="lightBtn">☀ Light</button>
+  </div>
+
+  <div id="dropText">
+    Drop GLB / GLTF model here
+  </div>
+
+  <div class="info">
+    <span>🖱 Left Drag: Rotate</span>
+    <span>🖐 Right Drag: Pan</span>
+    <span>🔍 Scroll: Zoom</span>
+  </div>
+
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js",
+      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.180.0/examples/jsm/"
+    }
+  }
+  </script>
+
+  <script type="module" src="app.js"></script>
+
+</body>
+</html>
