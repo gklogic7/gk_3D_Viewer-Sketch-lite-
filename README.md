@@ -5,4 +5,3 @@ Load and preview **GLB/GLTF** models with rotate, zoom, pan, lighting and wirefr
 
 
 🔗 **Live Demo:** [https://your-demo-link.com](https://gk3dviewer.vercel.app/)](https://gk3dviewer.vercel.app/)
-📦 **Download / GitHub:** https://github.com/yourusername/gk_3D_Viewer
